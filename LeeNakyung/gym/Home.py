@@ -80,7 +80,7 @@ with col1:
 
 with col2:
     st.markdown("""
-        <a href="http://localhost:8502/app" target="_self">
+        <a href="http://localhost:8502/02_Churn_By_Feature" target="_self">
             <div class="card-container card2">
                 <div class="card-title">👟 특성별 이탈률</div>
                 <div class="card-description">성별, 연령대 등 기준별 분석</div>
@@ -90,7 +90,7 @@ with col2:
 
 with col3:
     st.markdown("""
-        <a href="/pages/app" target="_self">
+        <a href="http://localhost:8502/03_Churn_By_Model" target="_self">
             <div class="card-container card3">
                 <div class="card-title">🤖 모델별 예측</div>
                 <div class="card-description">머신러닝 성능 비교 및 예측</div>
