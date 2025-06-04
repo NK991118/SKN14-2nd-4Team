@@ -17,6 +17,7 @@ st.title("📊 회원 현황 대시보드")
 
 # 데이터 불러오기
 data = pd.read_csv(r"C:\Workspaces\SKN14-2nd-4Team\LeeNakyung\data\gym_churn.csv")
+# data = pd.read_csv("data/gym_churn.csv")
 
 # 0/1 컬럼 문자형 변환
 data['gender_label'] = data['gender'].map({1:'남', 0:'여'})
