@@ -18,6 +18,13 @@ st.title("📊 회원 현황 대시보드")
 # 데이터 불러오기
 data = pd.read_csv(r"C:\Workspaces\SKN14-2nd-4Team\LeeNakyung\data\gym_churn.csv")
 
+# 0/1 컬럼 문자형 변환
+data['gender_label'] = data['gender'].map({1:'남', 0:'여'})
+data['Near_Location_label'] = data['Near_Location'].map({0:'No', 1:'Yes'})
+data['Partner_label'] = data['Partner'].map({0:'No', 1:'Yes'})
+data['Promo_friends_label'] = data['Promo_friends'].map({0:'No', 1:'Yes'})
+data['Group_visits_label'] = data['Group_visits'].map({0:'No', 1:'Yes'})
+
 # 스타일
 sns.set_style("whitegrid")
 
@@ -31,10 +38,9 @@ col1, col2, col3 = st.columns(3)
 # 성비 시각화
 with col1:
     st.subheader("🚻 성별 비율")
-    gender_count = data['gender'].value_counts()
+    gender_count = data['gender_label'].value_counts()
     fig1, ax1 = plt.subplots(figsize=(4, 4))
-    ax1.pie(gender_count, labels=gender_count.index, autopct='%1.1f%%', colors=['lightblue', 'lightpink'])
-    ax1.set_title("성별 구성 비율", fontproperties=font_prop)
+    ax1.pie(gender_count, labels=gender_count.index, autopct='%1.1f%%', colors=['lightblue', 'lightpink'], textprops={'fontproperties': font_prop})
     ax1.axis('equal')
     st.pyplot(fig1)
 
@@ -72,7 +78,7 @@ col4, col5, col6 = st.columns(3)
 with col4:
     st.subheader("📍 가까운 위치에 거주 여부")
     fig4, ax4 = plt.subplots()
-    sns.countplot(x='Near_Location', data=data, ax=ax4, palette="Set2")
+    sns.countplot(x='Near_Location_label', data=data, ax=ax4, palette="Set2")
     ax4.set_xlabel("가까운 위치 여부", fontproperties=font_prop)
     ax4.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax4.get_xticklabels():
@@ -86,7 +92,7 @@ st.markdown("---")
 with col5:
     st.subheader("🤝 제휴 회원 여부")
     fig5, ax5 = plt.subplots()
-    sns.countplot(x='Partner', data=data, ax=ax5, palette="Set3")
+    sns.countplot(x='Partner_label', data=data, ax=ax5, palette="Set3")
     ax5.set_xlabel("제휴 여부", fontproperties=font_prop)
     ax5.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax5.get_xticklabels():
@@ -98,7 +104,7 @@ with col5:
 # Promo_friends (추천받은 친구 수)
 with col6:
     st.subheader("👥 추천받은 친구 수")
-    promo_count = data['Promo_friends'].value_counts().sort_index()
+    promo_count = data['Promo_friends_label'].value_counts().sort_index()
     fig6, ax6 = plt.subplots()
     sns.barplot(x=promo_count.index, y=promo_count.values, ax=ax6, palette="Blues_d")
     ax6.set_xlabel("추천 친구 수", fontproperties=font_prop)
@@ -129,7 +135,7 @@ st.markdown("---")
 with col8:
     st.subheader("👨‍👩‍👧‍👦 단체방문 여부")
     fig8, ax8 = plt.subplots()
-    sns.countplot(x='Group_visits', data=data, ax=ax8, palette="Pastel2")
+    sns.countplot(x='Group_visits_label', data=data, ax=ax8, palette="Pastel2")
     ax8.set_xlabel("단체 방문 여부", fontproperties=font_prop)
     ax8.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax8.get_xticklabels():
