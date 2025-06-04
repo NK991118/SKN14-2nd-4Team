@@ -1,18 +1,78 @@
 import joblib
 import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
 import numpy as np
+import torch
+import torch.nn as nn
+import pickle
+
+# 1. DNN 모델 구조 정의 (기존 PyTorch 훈련 코드와 같게)
+class DNN(nn.Module):
+    def __init__(self, Cin):
+        super().__init__()
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.4)
+        self.linear1 = nn.Linear(Cin, 32)
+        self.linear2 = nn.Linear(32, 128)
+        self.linear3 = nn.Linear(128, 16)
+        self.fc = nn.Linear(16, 1)
+    def forward(self, x):
+        out = self.linear1(x)
+        out = self.relu(out)
+        out = self.linear2(out)
+        out = self.relu(out)
+        out = self.linear3(out)
+        out = self.relu(out)
+        out = self.dropout(out)
+        out = self.fc(out)
+        return out
 
 # Streamlit 앱의 전역 설정 (타이틀, 레이아웃 등)
 st.set_page_config(
     layout="wide"                  # 앱 화면을 넓게 사용 (기본은 centered)
 )
 
-# 사전에 학습된 머신러닝 모델 불러오기
-ml_model = joblib.load("model/model.joblib")  # 모델(딕셔너리형)에 model, scaler 등이 들어 있음
+# 모델 및 스케일러 파일 매핑
+model_scaler_files = {
+    "KNeighborsClassifier": {
+        "model": "model/best_models/KNeighborsClassifier.pkl",
+        "scaler": "model/best_models/KNeighborsClassifier_scaler.pkl"
+    },
+    "LGBMClassifier": {
+        "model": "model/best_models/LGBMClassifier.pkl",
+        "scaler": "model/best_models/LGBMClassifier_scaler.pkl"
+    },
+    "LogisticRegression": {
+        "model": "model/best_models/LogisticRegression.pkl",
+        "scaler": "model/best_models/LogisticRegression_scaler.pkl"
+    },
+    "MLPClassifier": {
+        "model": "model/best_models/MLPClassifier.pkl",
+        "scaler": "model/best_models/MLPClassifier_scaler.pkl"
+    },
+    "RandomForestClassifier": {
+        "model": "model/best_models/RandomForestClassifier.pkl",
+        "scaler": "model/best_models/RandomForestClassifier_scaler.pkl"
+    },
+    "SVC": {
+        "model": "model/best_models/SVC.pkl",
+        "scaler": "model/best_models/SVC_scaler.pkl"
+    },
+    "XGBClassifier": {
+        "model": "model/best_models/XGBClassifier.pkl",
+        "scaler": "model/best_models/XGBClassifier_scaler.pkl"
+    },
+    "DNN": {
+        "model": "model/best_models/best_model.pth",
+        "scaler": "model/best_models/DNN_scaler.pkl"
+    }
+
+}
 
 # 예측에 사용할 데이터셋 불러오기
-df = pd.read_csv("data/gym_churn_us.csv")
+df = pd.read_csv("data/test_data.csv")
+df = df.drop('AgeGroup', axis=1)
 
 # 입력 컬럼명(타겟 컬럼 'churn' 제외) 추출
 input_cols = [col for col in df.columns if col != 'Churn']
@@ -20,25 +80,23 @@ input_cols = [col for col in df.columns if col != 'Churn']
 # 입력 컬럼명 → 한글명 매핑 딕셔너리
 column_name_map = {
     'gender': '성별',
-    'Near_Location': '주거지 인근 여부',
-    'Partner': '파트너 여부',
-    'Promo_friends': '추천인 수',
-    'Phone': '전화번호 여부',
+    'Near_Location': '헬스장 근처 여부',
+    'Partner': '파트너 프로그램',
+    'Promo_friends': '친구 할인',
     'Contract_period': '계약 기간',
-    'Group_visits': '단체 방문 횟수',
+    'Group_visits': '그룹 수업 참여',
     'Age': '나이',
-    'Avg_additional_charges_total': '평균 추가 비용 합계',
-    'Month_to_end_contract': '계약 만료까지 남은 달',
-    'Lifetime': '누적 이용 기간',
-    'Avg_class_frequency_total': '평균 클래스 이용 빈도',
-    'Avg_class_frequency_current_month': '이번 달 클래스 이용 빈도'
+    'Avg_additional_charges_total': '평균 추가 요금',
+    'Month_to_end_contract': '계약 만료까지 개월',
+    'Lifetime': '이용 기간 개월',
+    'Avg_class_frequency_total': '전체 수업 참여 빈도',
+    'Avg_class_frequency_current_month': '이번 달 수업 참여 빈도'
 }
 
 # 선택형(카테고리형) 입력값(한글 → 수치) 매핑
 select_options = {
     'gender': {'남': 1, '여': 0},
     'Partner': {'예': 1, '아니오': 0},
-    'Phone': {'예': 1, '아니오': 0},
     'Near_Location': {'가까움': 1, '멀리 떨어짐': 0},
     'Promo_friends': {'추천인 있음':1, '추천인 없음':0},
     'Contract_period': {'1개월':1, '6개월':6, '12개월':12},
@@ -57,9 +115,11 @@ left, center, right = st.columns([1, 8, 1])
 # UI 작성
 with center:
     # 제목 및 안내 문구
-    st.markdown("## Gym 회원 이탈(Churn) 예측기")
-    st.info("아래에 회원 정보를 입력하면, AI가 이탈(Churn) 확률을 예측해줍니다.")
-
+    st.markdown("## Gym 회원 이탈 예측기")
+    selected_model = st.selectbox(
+        "**모델 선택**",
+        list(model_scaler_files.keys())
+    )
     # 입력 폼 작성
     with st.form("input_form"):
         st.markdown("### 회원 정보 입력")
@@ -116,14 +176,57 @@ with center:
         # 폼 제출 버튼 및 예측 결과 처리
         submitted = st.form_submit_button("예측하기")  # 폼 제출(예측하기) 버튼
         if submitted:
-            # 입력값을 데이터프레임으로 변환
-            input_df = pd.DataFrame([user_input])[input_cols] # user_input : 사용자가 입력한 데이터, input_cols : 컬럼 명
+            model_file = model_scaler_files[selected_model]['model']
+            scaler_file = model_scaler_files[selected_model]['scaler']
+            input_df = pd.DataFrame([user_input])[input_cols]
 
-            # 모델이 학습할 때 사용한 scaler로 스케일 변환
-            input_scaled_df = ml_model['scaler'].transform(input_df)
-            # 예측 확률 계산 (1 = 이탈확률)
-            churn_proba = ml_model['model'].predict_proba(input_scaled_df)[:, 1][0]
+            if selected_model == "DNN":
+                # DNN만 torch로 불러오기!
+                with open(scaler_file, "rb") as f:
+                    scaler = pickle.load(f)
+                input_scaled_df = scaler.transform(input_df)
+                Cin = input_scaled_df.shape[1]
+                model = DNN(Cin)
+                model.load_state_dict(torch.load(model_file, map_location="cpu"))
+                model.eval()
+                with torch.no_grad():
+                    input_tensor = torch.tensor(input_scaled_df, dtype=torch.float32)
+                    output = model(input_tensor)
+                    churn_proba = torch.sigmoid(output).item()
+            else:
+                # 기존 sklearn 계열
+                model = joblib.load(model_file)
+                scaler = joblib.load(scaler_file)
+                input_scaled_df = scaler.transform(input_df)
+                churn_proba = model.predict_proba(input_scaled_df)[:, 1][0]
+
             st.markdown("---")  # 구분선
+
+            # === 게이지 차트(컴팩트) ===
+            g_left, g_center, g_right = st.columns([2, 3, 2])
+            with g_center:
+                st.markdown("#### 이탈 확률(게이지)")
+                fig, ax = plt.subplots(figsize=(2.1, 0.7))  # 가로, 세로 적당히 조정
+
+                bar_color = 'crimson' if churn_proba > 0.5 else 'skyblue'
+
+                # 0부터 확률만큼 bar 길이
+                ax.barh([0], [churn_proba], color=bar_color, height=0.26, alpha=0.5)
+                ax.set_xlim(0, 1)
+                ax.set_yticks([])
+                ax.set_xticks([0, 0.5, 1])
+                ax.set_xticklabels(['0%', '50%', '100%'], fontsize=18, fontweight='bold')
+                ax.set_xlabel("")
+                ax.set_frame_on(False)
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+
+                # **확률 텍스트를 바 끝에 맞게!**
+                ax.text(churn_proba + 0.01, 0, f"{churn_proba:.2%}",
+                        va='center', ha='left', fontsize=28, fontweight='bold', color=bar_color, alpha=0.35)
+
+                st.pyplot(fig)
+
             # 예측 결과값에 따라 안내 메시지 출력
             if churn_proba > 0.5:
                 st.error(f"이 회원의 이탈 확률은 **{churn_proba:.2%}** 입니다. 적극적인 케어가 필요해 보여요!")
