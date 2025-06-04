@@ -15,9 +15,14 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 
 model_cfg = {
-    'LogisticRegression': {'class_weight': 'balanced', 'C': 1.0},
-    'XGBClassifier': {'objective': 'binary:logistic'},
+    'LogisticRegression': {'C': 2.0594494295802446},
+    'XGBClassifier': {'max_depth': 3, 'n_estimators': 100, 'scale_pos_weight': 1.38},
     'LGBMClassifier': {'verbosity' : 1},
+    'RandomForestClassifier': {'max_depth': 18, 'n_estimators': 131},
+    'SVC': {'C': 2.4512552224777417, 'kernel': 'linear'},
+    'KNeighborsClassifier': {'n_neighbors': 19},
+    'MLPC': {'activation': 'relu','alpha': 0.0001, 'hidden_layer_sizes': (128,),'learning_rate': 'constant','learning_rate_init': 0.001,'solver': 'adam'},
+    'VotingClassifier':{},
     'save_model' : True
 }
 
@@ -64,7 +69,7 @@ def main():
     # smote = SMOTE(random_state=42, sampling_strategy = 0.6)
     # X_train_resampled, y_train_resampled = smote.fit_resample(X_train_scaled, y_train)
 
-    model = LogisticRegression() #LogisticRegression, XGBClassifier, LGBMClassifier, MLPClassifier, DecisionTreeClassifier, KNeighborsClassifier, RandomForestClassifier, SVC
+    model = SVC() #LogisticRegression, XGBClassifier, LGBMClassifier, MLPClassifier, DecisionTreeClassifier, KNeighborsClassifier, RandomForestClassifier, SVC
 
     model = model_train_val(model, model_cfg, X_train_scaled, y_train, X_val_scaled, y_val)
 

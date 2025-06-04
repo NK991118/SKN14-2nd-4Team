@@ -1,17 +1,17 @@
-import torch, pickle
-# import pickle
-import torch.nn as nn
-import torch.nn.functional as F
+# import torch, pickle
+import pickle
+# import torch.nn as nn
+# import torch.nn.functional as F
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 import numpy as np
 import pandas as pd
-from mlp import DNN
+# from mlp import DNN
 
 test_cfg = {
     'file_type': 'pkl', #pth, pkl
     'pth_dir': './models/best_model.pth',
-    'pkl_dir': './models/LogisticRegression.pkl',
-    'scaler_dir': './models/LogisticRegression_scaler.pkl.'
+    'pkl_dir': './models/best_models/SVC.pkl',#LogisticRegression, XGBClassifier, LGBMClassifier, MLPClassifier, DecisionTreeClassifier, KNeighborsClassifier, RandomForestClassifier, SVC
+    'scaler_dir': './models/best_models/SVC_scaler.pkl.'
 }
 
 
@@ -39,23 +39,23 @@ def test_pth(X_test, y_test, model_dir):
     recall = recall_score(y_true, y_pred_labels)
     f1 = f1_score(y_true, y_pred_labels)
 
-    return acc, precision, recall, f1
+    return acc, precision, recall, f1, model.__class__.__name__
 
     
 
 def test_pkl(X_test, y_test, model_dir):
     
     with open(model_dir, 'rb') as f:
-        loaded_model = pickle.load(f)
+        model = pickle.load(f)
 
-    y_pred = loaded_model.predict(X_test)
+    y_pred = model.predict(X_test)
 
     acc = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
 
-    return acc, precision, recall, f1
+    return acc, precision, recall, f1, model.__class__.__name__
 
 
 def main():
@@ -69,15 +69,18 @@ def main():
     X_test_scaled = scaler.transform(X_test)
 
     if test_cfg['file_type'] == 'pth':
-        acc, precision, recall, f1 = test_pth(X_test_scaled, y_test, test_cfg['pth_dir'])
+        acc, precision, recall, f1, model_name = test_pth(X_test_scaled, y_test, test_cfg['pth_dir'])
 
     elif test_cfg['file_type'] == 'pkl':
-        acc, precision, recall, f1 = test_pkl(X_test_scaled, y_test, test_cfg['pkl_dir'])
+        acc, precision, recall, f1, model_name = test_pkl(X_test_scaled, y_test, test_cfg['pkl_dir'])
 
     else:
         raise ValueError(f'Unsupported file_type: {test_cfg['file_type']}')
 
-    print(f'Test Accuracy: {acc:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
+    print(f'{model_name} Test Accuracy: {acc:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
+    
+    with open('./models/res.txt', '+a') as a:
+        a.write(f'{model_name} Test Accuracy: {acc:.4f}, F1 Score: {f1:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f} \n')
 
 if __name__ == '__main__':
     main()
