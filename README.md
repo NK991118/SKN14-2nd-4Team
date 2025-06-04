@@ -25,7 +25,7 @@
 즉 **이탈 도둑**을 미리 감지하고 막기 위해 이 프로젝트를 시작했습니다."
 - 우리는 고객 데이터를 기반으로, **이탈 가능성이 높은 회원을 사전에 식별하고 대응하는 머신러닝 기반 예측 시스템**을 구축했습니다.
 
-<img src="image/image1.jpeg" width="100%" height="auto">
+<img src="image/image1.jpeg" width="50%" height="auto">
 
 <br>
 
