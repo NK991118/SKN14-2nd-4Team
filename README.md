@@ -25,7 +25,7 @@
 즉 **이탈 도둑**을 미리 감지하고 막기 위해 이 프로젝트를 시작했습니다."
 - 우리는 고객 데이터를 기반으로, **이탈 가능성이 높은 회원을 사전에 식별하고 대응하는 머신러닝 기반 예측 시스템**을 구축했습니다.
 
-<img src="image/image1.jpeg" width="50%" height="auto">
+<img src="image/image1.jpeg" width="25%" height="auto">
 
 <br>
 
@@ -52,7 +52,48 @@
 
 # 3️⃣ **기술 스택**
 
+### 협업 및 문서화  
+
 <br>
+
+### 🛠 협업 및 문서화  
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white) 
+![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white)  
+<br>
+
+### 💻 도구  
+![VSCode](https://img.shields.io/badge/VScode-007ACC?style=for-the-badge&logo=Visual-Studio-Code&logoColor=white)
+<br>
+
+### 😺 형상 관리
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white) 
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white)  
+<br>
+
+### 🚀 프로그래밍 언어  
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white)  
+<br>
+
+### 📊 데이터 분석  
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=Pandas&logoColor=white) 
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=NumPy&logoColor=white)  
+<br>
+
+### 🤖 머신러닝  
+![Scikit-Learn](https://img.shields.io/badge/Scikit%20Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)  
+<br>
+
+### 📈 데이터 시각화  
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=for-the-badge&logo=Matplotlib&logoColor=white) 
+![Seaborn](https://img.shields.io/badge/Seaborn-4C8CBF?style=for-the-badge&logo=Seaborn&logoColor=white)  
+<br>
+
+### 🔗 대시보드  
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)  
+
+<br>
+
+----
 
 # 4️⃣ **데이터 전처리 결과서 (EDA)**
 ### **Feature 설명**
@@ -96,7 +137,7 @@
 - df.info() 및 df.isnull().sum() 결과, 결측치는 존재하지 않음
 → 전 변수에 대해 추가적인 결측치 처리 없이 분석 가능
 #### **2. 이상치 탐색**
-- 수치형 변수들을 대상으로 IQR(사분위 범위) 기준 이상치 탐색을 수행함 
+- 수치형 변수들을 대상으로 이상치 탐색을 수행
 - 일부 변수에서 극단적인 값들이 관찰되었으나, 데이터 오류나 이상 입력값은 아님
 → 따라서 제거 없이 유지하고 모델링에 반영
 #### **3. 타겟 변수(Churn) 분포 확인**
@@ -107,7 +148,7 @@
 
 - 클래스 불균형이 존재하므로, f1-score 중심 평가 필요
 #### **4. 상관관계 분석**
-- 전체 수치형 변수 간의 피어슨 상관계수 행렬을 시각화함 
+- 전체 수치형 변수 간의 상관계수 행렬을 시각화함 
 - 그중, Churn과의 상관계수 절댓값이 0.1 이상인 변수를 피처로 선별(phone 제외)
 #### **5. 모델링을 위한 정리**
 - 주요 범주형 변수(gender, Partner, Near_Location 등)는 이미 숫자형으로 인코딩되어 있음 
@@ -155,6 +196,17 @@
 ----
 
 # 7️⃣-회고
-<br>
+
+#### **문상희**
+- 안녕하세요
+#### **강윤구**
+- 안녕하세요
+#### **김광령**
+- 안녕하세요
+#### **유용환**
+- 안녕하세요
+#### **이나경**
+- 안녕하세요
+
 
 ----
