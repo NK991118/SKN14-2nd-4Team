@@ -19,7 +19,7 @@ model_cfg = {
     'XGBClassifier': {'max_depth': 3, 'n_estimators': 100, 'scale_pos_weight': 1.38},
     'LGBMClassifier': {'verbosity' : 1},
     'RandomForestClassifier': {'max_depth': 18, 'n_estimators': 131},
-    'SVC': {'C': 2.4512552224777417, 'kernel': 'linear'},
+    'SVC': {'C': 2.4512552224777417, 'kernel': 'linear','probability': True},
     'KNeighborsClassifier': {'n_neighbors': 19},
     'MLPC': {'activation': 'relu','alpha': 0.0001, 'hidden_layer_sizes': (128,),'learning_rate': 'constant','learning_rate_init': 0.001,'solver': 'adam'},
     'VotingClassifier':{},
@@ -75,11 +75,11 @@ def main():
 
     if model_cfg['save_model'] == True:
         # print(model.__class__.__name__)
-        dir = './models/' + model.__class__.__name__ + '.pkl'
+        dir = './models/best_models/' + model.__class__.__name__ + '.pkl'
         with open(dir, 'wb') as f:
             pickle.dump(model, f)
 
-        scaler_dir = './models/' + model.__class__.__name__ + '_scaler.pkl'
+        scaler_dir = './models/best_models/' + model.__class__.__name__ + '_scaler.pkl'
         with open(scaler_dir, 'wb') as s:
           pickle.dump(scaler, s)
             
