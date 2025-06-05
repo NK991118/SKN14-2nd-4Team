@@ -36,36 +36,36 @@ st.set_page_config(
 # 모델 및 스케일러 파일 매핑
 model_scaler_files = {
     "KNeighborsClassifier": {
-        "model": "model/best_models/KNeighborsClassifier.pkl",
-        "scaler": "model/best_models/KNeighborsClassifier_scaler.pkl"
+        "model": "../model/best_models/KNeighborsClassifier.pkl",
+        "scaler": "../model/best_models/KNeighborsClassifier_scaler.pkl"
     },
     "LGBMClassifier": {
-        "model": "model/best_models/LGBMClassifier.pkl",
-        "scaler": "model/best_models/LGBMClassifier_scaler.pkl"
+        "model": "../model/best_models/LGBMClassifier.pkl",
+        "scaler": "../model/best_models/LGBMClassifier_scaler.pkl"
     },
     "LogisticRegression": {
-        "model": "model/best_models/LogisticRegression.pkl",
-        "scaler": "model/best_models/LogisticRegression_scaler.pkl"
+        "model": "../model/best_models/LogisticRegression.pkl",
+        "scaler": "../model/best_models/LogisticRegression_scaler.pkl"
     },
     "MLPClassifier": {
-        "model": "model/best_models/MLPClassifier.pkl",
-        "scaler": "model/best_models/MLPClassifier_scaler.pkl"
+        "model": "../model/best_models/MLPClassifier.pkl",
+        "scaler": "../model/best_models/MLPClassifier_scaler.pkl"
     },
     "RandomForestClassifier": {
-        "model": "model/best_models/RandomForestClassifier.pkl",
-        "scaler": "model/best_models/RandomForestClassifier_scaler.pkl"
+        "model": "../model/best_models/RandomForestClassifier.pkl",
+        "scaler": "../model/best_models/RandomForestClassifier_scaler.pkl"
     },
     "SVC": {
-        "model": "model/best_models/SVC.pkl",
-        "scaler": "model/best_models/SVC_scaler.pkl"
+        "model": "../model/best_models/SVC.pkl",
+        "scaler": "../model/best_models/SVC_scaler.pkl"
     },
     "XGBClassifier": {
-        "model": "model/best_models/XGBClassifier.pkl",
-        "scaler": "model/best_models/XGBClassifier_scaler.pkl"
+        "model": "../model/best_models/XGBClassifier.pkl",
+        "scaler": "../model/best_models/XGBClassifier_scaler.pkl"
     },
     "DNN": {
-        "model": "model/best_models/best_model.pth",
-        "scaler": "model/best_models/DNN_scaler.pkl"
+        "model": "../model/best_models/best_model.pth",
+        "scaler": "../model/best_models/DNN_scaler.pkl"
     }
 
 }
