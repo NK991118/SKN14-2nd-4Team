@@ -57,7 +57,7 @@ class Config:
     'Near_Location': {'가까움': 1, '멀리 떨어짐': 0},
     'Promo_friends': {'추천인 있음':1, '추천인 없음':0},
     'Contract_period': {'1개월':1, '6개월':6, '12개월':12},
-    'Group_visits': {'단체 방문 있음':1, '단체 방문 없음':0 },
+    'Group_visits': {'참여':1, '불참여':0 },
 }
     ORIGINAL_DATA_DIR = '04_app/data/gym_churn_us.csv'
     TEST_DATA_DIR = '04_app/data/test_data.csv'
