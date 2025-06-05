@@ -38,6 +38,20 @@
 
 <br>
 
+### 역할 분담
+
+| 작업명                | 담당자   | 산출물             |
+| ------------------ | ----- | --------------- |
+| 프로젝트 주제 선정         | 전체 팀원 |                 |
+| 데이터 수집 및 전처리       | 전체 팀원 | CSV 파일, EDA 보고서 |
+| 모델 학습       | 전체 팀원 | pkl, pth 파일 |
+| 홈 페이지 개발           | 이나경   | Streamlit 파일    |
+| 페이지 1 (회원 현황) 개발   | 이나경   | Streamlit 파일    |
+| 페이지 2 (특성별 이탈률) 개발 | 김광령   | Streamlit 파일    |
+| 페이지 3 (모델별 이탈률) 개발 | 유용환   | Streamlit 파일    |
+| 최종 점검 및 통합         | 문상희   | 전체 자료           |
+| 발표 준비              | 강윤구   | PPT             |
+<br>
 ----
 # 2️⃣ 프로젝트 개요
 
@@ -69,9 +83,6 @@
 ----
 
 # 3️⃣ **기술 스택**
-
-### 협업 및 문서화  
-
 <br>
 
 ### 🛠 협업 및 문서화  
@@ -80,7 +91,7 @@
 <br>
 
 ### 💻 도구  
-![VSCode](https://img.shields.io/badge/VScode-007ACC?style=for-the-badge&logo=Visual-Studio-Code&logoColor=white)
+![PyCharm](https://img.shields.io/badge/PyCharm-21D789?style=for-the-badge&logo=pycharm&logoColor=white)
 <br>
 
 ### 😺 형상 관리
@@ -97,8 +108,9 @@
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=NumPy&logoColor=white)  
 <br>
 
-### 🤖 머신러닝  
-![Scikit-Learn](https://img.shields.io/badge/Scikit%20Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)  
+### 🤖 머신러닝  / 딥러닝 
+![Scikit-Learn](https://img.shields.io/badge/Scikit%20Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![Pytorch](https://img.shields.io/badge/Pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)  
 <br>
 
 ### 📈 데이터 시각화  
@@ -108,8 +120,12 @@
 
 ### 🔗 대시보드  
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)  
-
 <br>
+
+### ⚙️ 필수 라이브러리 설치
+```
+pip install -r requirements.txt
+```
 
 ----
 
@@ -202,12 +218,13 @@
 | RandomForestClassifier | 0.9125   | 0.8259   | 0.8737    | 0.7830 |
 | DecisionTreeClassifier | 0.8838   | 0.7759   | 0.7931    | 0.7594 |
 | KNeighborsClassifier   | 0.8750   | 0.7619   | 0.7692    | 0.7547 |
-
+<br>
 
 - 총 9개의 모델(Logistic Regression, SVC, Random Forest, XGBoost, LightGBM, KNN, Decision Tree, MLPClassifier, DNN)을 학습
 - 정확도(Accuracy), 정밀도(Precision), 재현율(Recall), F1-score를 주요 평가지표로 사용
 
-#### 최종 선정 모델: DNN (Deep Neural Network)
+
+### 최종 선정 모델: DNN (Deep Neural Network)
 - F1-score 기준으로 **가장 우수한 성능(0.8969)**을 기록하였으며,
 - Precision과 Recall이 모두 고르게 높아 이탈 고객을 정확히 식별하고 놓치지 않는 모델로 평가됨 
 - 스케일링 전처리와의 조합을 통해 안정적인 성능을 발휘함
@@ -216,9 +233,38 @@
 <br>
 
 -----
+# 6️⃣ **Streamlit 구현**
+```
+streamlit run 04_app/Home.py
+```
+<br>
 
+## 📚 주요 기능
 
-# 6️⃣ **기대효과 및 전략**
+### 🏡메인 페이지
+
+<img src="image/Home.png" width="100%" height="auto">
+
+### 📊 회원 현황 대시보드
+
+**- 전체 회원 수, 성별 비율, 연령대 분포, 이용 기간 분포 등을 시각화하여 회원 데이터 전반을 직관적으로 파악**
+
+<img src="image/01_회원현황.png" width="100%" height="auto">
+
+### 🔍 헬스장 회원 이탈 예측기
+**- 입력된 회원 정보를 기반으로 머신러닝 모델을 통해 이탈 확률을 예측하고 리스크를 사전에 탐지**
+
+<img src="image/02_예측기1.png" width="100%" height="auto">
+
+### 🏋️‍♂️ 헬스장 회원 이탈 예측 결과 분석
+**- 예측된 결과를 바탕으로 전체 데이터와 이탈/유지 회원 그룹별 통계와 모델 성능(F1 Score, 재현율 등) 지표 제공**
+
+<img src="image/03_이탈1.png" width="100%" height="auto">
+
+<br>
+
+-----
+# 7️⃣ **기대효과 및 전략**
 
 - **🎯 회원 이탈률 감소**  
   이탈 가능성이 높은 고객을 조기에 식별하여  
@@ -242,15 +288,19 @@
 # 7️⃣-회고
 
 #### **문상희**
-- 안녕하세요
+- 팀원들과 협업하여 데이터 분석과 머신러닝/딥러닝 모델링 전 과정을 경험하며, 문제 해결 능력과 커뮤니케이션 역량을 함께 키울 수 있었습니다.
+
 #### **강윤구**
-- 안녕하세요
+- 데이터 수집 및 로딩 - EDA - 전처리 및 변수 선택 - 머신러닝, 딥러닝 모델 학습 - 최적 모델 선정 - 실제 예측 서비스 구현과정을 배울 수 있던 좋은 경험이었습니다.
+
 #### **김광령**
-- 안녕하세요
+- 여러 머신 러닝 모델을 돌려보며 모델을 훈련시키고 또 그 거기서 최적의 모델을 찾아 그 모델을 활용하여 결과물을 만들어내는 과정을 통해 머신 러닝에 대해 깊이 있게 배울 수 있었던 거 같습니다.
+
 #### **유용환**
-- 안녕하세요
+- 데이터 시각화, 모델학습/예측  구현과정을 직접 다뤄보며, machine_leanring의 원리에 대해 좀 더 깊게 이해할 수 있었고, 의사소통의 중요성 또한 느낄 수 있었던 소중한 경험이었습니다.
+
 #### **이나경**
-- 안녕하세요
+- EDA를 작성하고 여러 머신러닝 모델을 다뤄보는 과정이 흥미로웠습니다. 늘 열심히 해주는 훌륭한 팀원들 덕분에 더 많은 것을 배워가는 시간이었습니다. 또한 저번 프로젝트에 비해 스스로도 더 발전된 것 같아 뿌듯합니다!
 
 
 ----
