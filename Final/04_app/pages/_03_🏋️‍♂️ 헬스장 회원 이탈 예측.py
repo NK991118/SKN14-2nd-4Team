@@ -108,11 +108,11 @@ try:
     with col1:
         st.metric("정확도", f"{accuracy:.3f}")
     with col2:
-        st.metric("정밀도", f"{precision:.3f}")
+        st.metric("F1 점수", f"{f1:.3f}")
     with col3:
         st.metric("재현율", f"{recall:.3f}")
     with col4:
-        st.metric("F1 점수", f"{f1:.3f}")
+        st.metric("정밀도", f"{precision:.3f}")
 
     result_df = korean_df.copy()
 
