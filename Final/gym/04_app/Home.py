@@ -6,9 +6,8 @@ st.set_page_config(page_title="회원 분석 포털", page_icon="👥", layout="
 # 상단 타이틀
 st.markdown("""
     <h1 style="text-align: center; color: black;">👥 회원 분석 포털 👥</h1>
-    <p style="text-align: center; color: black; font-size: 20px;">
-        회원 이탈을 분석하고 전략을 수립해보세요!
-    </p>
+    <h1 style="text-align: center; color: black; margin-bottom: 10px; font-size: 10px;">
+
 """, unsafe_allow_html=True)
 
 # 상단 이미지

@@ -3,21 +3,30 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.font_manager as fm
-import matplotlib
+import matplotlib, os
+from config import Config
 
-font_path = "C:/Windows/Fonts/malgun.ttf"  # ← 윈도우에서 가장 안전한 기본 한글 폰트
+cfg = Config()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+def get_abs_path(relative_path):
+    return os.path.join(BASE_DIR, relative_path)
+
+font_path = "C:/Windows/Fonts/malgun.ttf"  
 font_prop = fm.FontProperties(fname=font_path)
 font_name = font_prop.get_name()
 matplotlib.rc('font', family=font_name)
 plt.rcParams['axes.unicode_minus'] = False
 
-# 설정
 st.set_page_config(page_title="회원 현황", layout="wide")
-st.title("📊 회원 현황 대시보드")
 
-# 데이터 불러오기
-#data = pd.read_csv("C:\Workspaces\SKN14-2nd-4Team\LeeNakyung\data\gym_churn.csv")
-data = pd.read_csv("data/gym_churn_us.csv")
+left, center, right = st.columns([2.5, 4, 2.5])
+
+with center:
+    st.title("📊 회원 현황 대시보드")
+
+data = pd.read_csv(get_abs_path(cfg.ORIGINAL_DATA_DIR))
 
 # 0/1 컬럼 문자형 변환
 data['gender_label'] = data['gender'].map({1:'남', 0:'여'})
@@ -77,10 +86,10 @@ col4, col5, col6 = st.columns(3)
 
 # Near_Location (가까운 위치 여부)
 with col4:
-    st.subheader("📍 가까운 위치에 거주 여부")
+    st.subheader("📍 헬스장 근처 거주")
     fig4, ax4 = plt.subplots()
     sns.countplot(x='Near_Location_label', data=data, ax=ax4, palette="Set2")
-    ax4.set_xlabel("가까운 위치 여부", fontproperties=font_prop)
+    ax4.set_xlabel("헬스장과의 거리", fontproperties=font_prop)
     ax4.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax4.get_xticklabels():
         label.set_fontproperties(font_prop)
@@ -102,13 +111,13 @@ with col5:
         label.set_fontproperties(font_prop)
     st.pyplot(fig5)
 
-# Promo_friends (추천받은 친구 수)
+# Promo_friends (지인 추천)
 with col6:
-    st.subheader("👥 추천받은 친구 수")
+    st.subheader("👥 지인 추천 여부")
     promo_count = data['Promo_friends_label'].value_counts().sort_index()
     fig6, ax6 = plt.subplots()
     sns.barplot(x=promo_count.index, y=promo_count.values, ax=ax6, palette="Blues_d")
-    ax6.set_xlabel("추천 친구 수", fontproperties=font_prop)
+    ax6.set_xlabel("지인 추천 여부", fontproperties=font_prop)
     ax6.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax6.get_xticklabels():
         label.set_fontproperties(font_prop)
@@ -132,12 +141,12 @@ with col7:
     st.pyplot(fig7)
 st.markdown("---")
 
-# Group_visits (단체방문 여부)
+# Group_visits (그룹 수업 참여 여부)
 with col8:
-    st.subheader("👨‍👩‍👧‍👦 단체방문 여부")
+    st.subheader("👨‍👩‍👧‍👦 그룹 수업 참여 여부")
     fig8, ax8 = plt.subplots()
     sns.countplot(x='Group_visits_label', data=data, ax=ax8, palette="Pastel2")
-    ax8.set_xlabel("단체 방문 여부", fontproperties=font_prop)
+    ax8.set_xlabel("그룹 수업 참여 여부", fontproperties=font_prop)
     ax8.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax8.get_xticklabels():
         label.set_fontproperties(font_prop)
@@ -145,12 +154,12 @@ with col8:
         label.set_fontproperties(font_prop)
     st.pyplot(fig8)
 
-# Avg_additional_charges_total (총 부가비용 평균)
+# Avg_additional_charges_total (평균 추가 요금)
 with col9:
-    st.subheader("💰 총 부가비용 평균")
+    st.subheader("💰 평균 추가 요금")
     fig9, ax9 = plt.subplots()
     sns.histplot(data['Avg_additional_charges_total'], bins=30, color="coral", ax=ax9)
-    ax9.set_xlabel("총 부가비용 평균", fontproperties=font_prop)
+    ax9.set_xlabel("평균 추가 요금", fontproperties=font_prop)
     ax9.set_ylabel("회원 수", fontproperties=font_prop)
     for label in ax9.get_xticklabels():
         label.set_fontproperties(font_prop)
