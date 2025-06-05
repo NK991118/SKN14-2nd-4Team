@@ -1,92 +1,54 @@
-
-
-
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
-import torch
+import torch, pickle, os
 import torch.nn as nn
-import pickle
+from dnn import DNN
+from config import Config
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-# ====================== DNN 클래스 정의 ======================
-class DNN(nn.Module):
-    def __init__(self, Cin):
-        super().__init__()
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.4)
-        self.linear1 = nn.Linear(Cin, 32)
-        self.linear2 = nn.Linear(32, 128)
-        self.linear3 = nn.Linear(128, 16)
-        self.fc = nn.Linear(16, 1)
-    def forward(self, x):
-        out = self.linear1(x)
-        out = self.relu(out)
-        out = self.linear2(out)
-        out = self.relu(out)
-        out = self.linear3(out)
-        out = self.relu(out)
-        out = self.dropout(out)
-        out = self.fc(out)
-        return out
+cfg = Config()
 
-# ====================== 파일 경로 ============================
-MODEL_DIR = "models/"
-MODEL_FILES = {
-    'Logistic Regression': MODEL_DIR + 'LogisticRegression.pkl',
-    'Random Forest': MODEL_DIR + 'RandomForestClassifier.pkl',
-    'Decision Tree': MODEL_DIR + 'DecisionTreeClassifier.pkl',
-    'KNN': MODEL_DIR + 'KNeighborsClassifier.pkl',
-    'SVC': MODEL_DIR + 'SVC.pkl',
-    'LightGBM': MODEL_DIR + 'LGBMClassifier.pkl',
-    'XGBoost': MODEL_DIR + 'XGBClassifier.pkl',
-    'MLP': MODEL_DIR + 'MLPClassifier.pkl',
-    'DNN': MODEL_DIR + 'best_model.pth'
-}
-SCALER_FILES = {
-    'Logistic Regression': MODEL_DIR + 'LogisticRegression_scaler.pkl',
-    'Random Forest': MODEL_DIR + 'RandomForestClassifier_scaler.pkl',
-    'Decision Tree': MODEL_DIR + 'DecisionTreeClassifier_scaler.pkl',
-    'KNN': MODEL_DIR + 'KNeighborsClassifier_scaler.pkl',
-    'SVC': MODEL_DIR + 'SVC_scaler.pkl',
-    'LightGBM': MODEL_DIR + 'LGBMClassifier_scaler.pkl',
-    'XGBoost': MODEL_DIR + 'XGBClassifier_scaler.pkl',
-    'MLP': MODEL_DIR + 'MLPClassifier_scaler.pkl',
-    'DNN': MODEL_DIR + 'DNN_scaler.pkl'
-}
-KOREAN_DATA_PATH = "data/gym_test_korean.csv"
-MODEL_INPUT_PATH = "data/gym_test_for_model.csv"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ====================== 함수 정의 ============================
+def get_abs_path(relative_path):
+    return os.path.join(BASE_DIR, relative_path)
+
 def load_korean_data():
-    return pd.read_csv(KOREAN_DATA_PATH, encoding='utf-8-sig')
+    return pd.read_csv(get_abs_path(cfg.KOREAN_DATA_PATH), encoding='utf-8-sig')
 
 def load_model_input_data():
-    return pd.read_csv(MODEL_INPUT_PATH)
+    return pd.read_csv(get_abs_path(cfg.MODEL_INPUT_PATH))
 
 def load_model(path):
     try:
-        return joblib.load(path)
+        with open(path, "rb") as f:
+            model = pickle.load(f)
+        return model
+    
     except Exception as e:
         raise e
-
+    
 def load_scaler(path):
     try:
-        return joblib.load(path)
+        with open(path, "rb") as f:
+            scaler = pickle.load(f)
+        return scaler
+    
     except Exception as e:
-        # DNN 스케일러는 pickle로 저장했을 수 있으니 시도
-        with open(path, 'rb') as f:
-            return pickle.load(f)
-
+        raise e
+    
 def check_model_probability_support(model):
     return hasattr(model, 'predict_proba')
 
-# ====================== Streamlit UI ========================
-st.title("🏋️‍♂️ 헬스장 회원 이탈 예측")
+left, center, right = st.columns([2.5, 5, 2.5])
+
+with center:
+    st.title("🏋️‍♂️ 헬스장 회원 이탈 예측")
 
 selected_model = st.selectbox(
     "🤖 모델 선택",
-    list(MODEL_FILES.keys()),
+    list(cfg.MODEL_SCALER_FILES.keys()),
     index=0
 )
 
@@ -105,7 +67,9 @@ try:
         st.metric("이탈한 회원", churn_counts.get('이탈', 0))
 
     with st.spinner(f"{selected_model} 모델 로딩 중..."):
-        scaler = load_scaler(SCALER_FILES[selected_model])
+
+        model_file = get_abs_path(cfg.MODEL_SCALER_FILES[selected_model]['model'])
+        scaler = load_scaler(get_abs_path(cfg.MODEL_SCALER_FILES[selected_model]['scaler']))
         X_test = model_input_df.drop(columns=['Churn'])
         y_test = model_input_df['Churn']
 
@@ -114,8 +78,9 @@ try:
             X_scaled = scaler.transform(X_test)
             Cin = X_scaled.shape[1]
             model = DNN(Cin)
-            model.load_state_dict(torch.load(MODEL_FILES["DNN"], map_location="cpu"))
+            model.load_state_dict(torch.load(model_file, map_location="cpu"))
             model.eval()
+
             with torch.no_grad():
                 X_tensor = torch.tensor(X_scaled, dtype=torch.float32)
                 logits = model(X_tensor)
@@ -124,7 +89,7 @@ try:
                 churn_probs = probs
             supports_proba = True
         else:
-            model = load_model(MODEL_FILES[selected_model])
+            model = load_model(model_file)
             X_scaled = scaler.transform(X_test)
             y_pred = model.predict(X_scaled)
             supports_proba = check_model_probability_support(model)
@@ -133,8 +98,7 @@ try:
             else:
                 churn_probs = np.full(len(X_test), np.nan)
 
-    # ====== 성능 지표 출력 ======
-    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
@@ -150,11 +114,7 @@ try:
     with col4:
         st.metric("F1 점수", f"{f1:.3f}")
 
-    # ====== 결과 표 만들기 ======
     result_df = korean_df.copy()
-    result_df['예측 결과'] = ['유지' if pred == 0 else '이탈' for pred in y_pred]
-    result_df['예측 정확도'] = ['정확' if actual == pred else '오류'
-                           for actual, pred in zip(y_test, y_pred)]
 
     if supports_proba:
         result_df['이탈 확률'] = np.where(
@@ -173,7 +133,7 @@ try:
         st.write("""
         ### 💰 평균 추가 요금
         ```
-        평균_추가_요금 = 총_추가_서비스_비용 / 총_이용_개월수
+        평균 추가 요금 = 총 추가 서비스 비용 / 총 이용 개월수
         ```
         **포함 서비스**: 개인트레이닝(PT), 락커대여, 단백질음료, 사우나, 특별프로그램, 타월서비스
 
@@ -183,7 +143,7 @@ try:
 
         ### 🏃‍♀️ 전체 수업 참여 빈도
         ```
-        전체_수업_참여_빈도 = 총_수업_참여_횟수 / 총_이용_주수
+        전체 수업 참여 빈도 = 총 수업 참여 횟수 / 총 이용 주수
         ```
         **포함 수업**: 요가, 필라테스, 스피닝, 에어로빅, 크로스핏, 수영강습
 
@@ -193,7 +153,7 @@ try:
 
         ### 📅 이번달 수업 참여 빈도
         ```
-        이번달_수업_참여_빈도 = 이번달_수업_참여_횟수 / 4
+        이번달 수업 참여 빈도 = 이번달 수업 참여 횟수 / 4
         ```
         **측정 목적**: 최근 활동 패턴 파악, 이탈 조기 신호 감지
 
@@ -201,32 +161,36 @@ try:
 
         ### ⚠️ 이탈 위험 신호
         ```
-        이번달_빈도 < 전체_빈도 × 0.5  →  활동 급감 위험
-        이번달_빈도 = 0  →  활동 중단 고위험
+        이번달 빈도 < 전체_빈도 × 0.5  →  활동 급감 위험
+        이번달 빈도 = 0  →  활동 중단 고위험
         ```
         """)
 
-    # 데이터 표시 옵션
     st.write("### 📋 예측 결과 상세")
 
     show_option = st.radio(
         "표시할 데이터 선택:",
-        ["전체 데이터", "현재 이용 중인 회원만", "이탈한 회원만", "예측 실패 케이스만"]
+        ["전체 데이터", "현재 이용 중인 회원만", "이탈한 회원만"]
     )
 
     if show_option == "전체 데이터":
         display_df = result_df
+
     elif show_option == "현재 이용 중인 회원만":
         display_df = result_df[result_df[churn_col] == '유지']
+
     elif show_option == "이탈한 회원만":
         display_df = result_df[result_df[churn_col] == '이탈']
-    else:  # 예측 실패 케이스
+
+    else:  
         display_df = result_df[result_df['예측 정확도'] == '오류']
 
-    # 컬럼 순서 재정렬 - 한글 컬럼들 먼저, 계산된 컬럼들을 지정된 순서로
     korean_feature_columns = [col for col in display_df.columns
-                              if col not in ['예측 결과', '예측 정확도', '이탈 확률', churn_col]]
-    calculated_columns = ['예측 결과', churn_col, '예측 정확도', '이탈 확률']
+                            #   if col not in ['예측 결과', '예측 정확도', '이탈 확률', churn_col]]
+                            if col not in ['이탈 확률', churn_col]]
+    
+    # calculated_columns = ['예측 결과', churn_col, '예측 정확도', '이탈 확률']
+    calculated_columns = [churn_col, '이탈 확률']
     display_columns = korean_feature_columns + calculated_columns
 
     st.dataframe(
@@ -235,11 +199,9 @@ try:
         height=400
     )
 
-    # 고위험 회원 하이라이트 (확률 예측 지원하는 모델만)
     if show_option in ["전체 데이터", "현재 이용 중인 회원만"] and supports_proba:
         high_risk_threshold = st.slider("고위험 임계값 설정", 0.1, 0.9, 0.7, 0.1)
 
-        # 현재 이용 중이면서 이탈 확률이 높은 회원 찾기
         high_risk_mask = (
                 (result_df[churn_col] == '유지') &
                 (pd.to_numeric(result_df['이탈 확률'], errors='coerce') >= high_risk_threshold)
@@ -257,16 +219,6 @@ try:
     elif not supports_proba:
         st.info(f"ℹ️ {selected_model} 모델은 확률 예측을 지원하지 않아 고위험 회원 분석을 할 수 없습니다.")
 
-    # 모델별 추가 정보 표시
-    if selected_model == 'SVC':
-        st.info("""
-        📝 **SVC 모델 정보:**
-        - Support Vector Classifier는 기본적으로 확률 예측을 지원하지 않습니다.
-        - 분류 경계를 기반으로 한 정확한 분류 결과를 제공합니다.
-        - 고차원 데이터에서 우수한 성능을 보입니다.
-        """)
-
-    # 다운로드 버튼
     csv_data = result_df.to_csv(index=False, encoding='utf-8-sig')
     st.download_button(
         label="📥 예측 결과 CSV 다운로드",
