@@ -28,9 +28,9 @@ float_cols = [
     'Avg_class_frequency_total',
     'Avg_class_frequency_current_month'
 ]
-left, center, right = st.columns([2.5, 5, 2.5])
+left, center, right = st.columns([2.2, 5.4, 2.2])
 with center:
-    st.title("🔍 Gym 회원 이탈 예측기")
+    st.title("🔍 헬스장 회원 이탈 예측기")
 
 left, center, right = st.columns([1, 8, 1])
 with center:
