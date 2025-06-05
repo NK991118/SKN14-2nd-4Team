@@ -70,7 +70,7 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("""
-        <a href="http://localhost:8502/01_user_status" target="_self">
+        <a href="http://localhost:8501/01_user_status" target="_self">
             <div class="card-container card1">
                 <div class="card-title">📊 회원 현황</div>
                 <div class="card-description">회원 통계 및 구조 확인</div>
@@ -80,7 +80,7 @@ with col1:
 
 with col2:
     st.markdown("""
-        <a href="http://localhost:8502/02_Churn_By_Feature" target="_self">
+        <a href="http://localhost:8501/02_Churn_By_Feature" target="_self">
             <div class="card-container card2">
                 <div class="card-title">👟 특성별 이탈률</div>
                 <div class="card-description">성별, 연령대 등 기준별 분석</div>
@@ -90,7 +90,7 @@ with col2:
 
 with col3:
     st.markdown("""
-        <a href="http://localhost:8502/03_Churn_By_Model" target="_self">
+        <a href="http://localhost:8501/03_Churn_By_Model" target="_self">
             <div class="card-container card3">
                 <div class="card-title">🤖 모델별 예측</div>
                 <div class="card-description">머신러닝 성능 비교 및 예측</div>
